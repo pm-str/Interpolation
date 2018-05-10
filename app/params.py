@@ -1,3 +1,6 @@
+from typing import List
+
+
 class ConfData:
     def __init__(self, desc, key, value=None, dtype=None):
         self._desc = desc
@@ -10,8 +13,12 @@ class ConfData:
         return f'{self._desc} <{self.dtype.__name__}>'
 
     @property
+    def default_value(self):
+        return self._value
+
+    @property
     def value(self):
-        fd = REQUEST_SETTINGS.get('formula_data')
+        fd = REQUEST_SETTINGS.get('input_data')
         if fd and fd.get(self.key):
             return fd.get(self.key)
         return self._value
@@ -23,6 +30,16 @@ class AlgorithmResult:
         self.values = values or []
         self.labels = list(range(1, len(values) + 1))
         self.results = [result] * len(values)
+
+
+class RangeResult:
+    def __init__(self, values1, values2: List[AlgorithmResult]):
+        self.values1 = values1
+        self.labels1 = list(range(1, len(values1)+1))
+
+        self.values2 = [i.result for i in values2]
+        self.labels2 = list(range(1, len(values2)+1))
+
 
 
 MACKLOREN = 'mackloren'

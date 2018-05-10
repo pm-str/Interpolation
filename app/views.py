@@ -1,9 +1,12 @@
+from functools import partial
+
 from django.views.generic import TemplateView, RedirectView
 
 from app.algorithms import ComputationalCluster
-from app.utils import to_value
+from app.helpers import to_lambda, evaluate_range
+from app.utils import to_value, extract_conf_data, extract_range_data
 from app.validators import validate_settings, clear_validators, validate_algo_response
-from .params import PARAMS, ALGORITHMS, REQUEST_SETTINGS, REQUEST_QUERY
+from .params import PARAMS, ALGORITHMS, REQUEST_SETTINGS, REQUEST_QUERY, RangeResult
 
 
 class TaskView(TemplateView):
@@ -27,10 +30,13 @@ class ResultView(TemplateView):
 
         formula = params.get('formula', [None])[0]
         if formula and formula in ALGORITHMS.keys():
+            CNF = PARAMS[formula]
+
             new_context['formula'] = (formula, ALGORITHMS[formula])
             new_query['formula'] = formula
 
-            new_context['formula_fields'] = PARAMS[formula]
+            new_context['formula_fields'] = CNF['CONFIG']
+            new_context['range_fields'] = CNF['RANGE']
 
         expr = params.get('expression')
         if expr:
@@ -53,39 +59,20 @@ class ClearParamsView(RedirectView):
     url = '/result'
 
     def get_redirect_url(self, *args, **kwargs):
-        url = super().get_redirect_url(args, kwargs)
-
         REQUEST_SETTINGS.clear()
 
-        return url
+        return self.url
 
 
-class EvaluteView(RedirectView):
+class EvalFormulaView(RedirectView):
     url = '/result'
 
     def get_redirect_url(self, *args, **kwargs):
-        url = super().get_redirect_url(args, kwargs)
         get_data = self.request.GET
-        algo_data = {}
 
         REQUEST_SETTINGS['success'] = True
 
-        for field in REQUEST_SETTINGS.get('formula_fields', []):
-            key = field.key
-            value = get_data.get(key)
-            dtype = field.dtype or float
-            if not value:
-                REQUEST_SETTINGS['error'] = 'Ошибка. Введите недостающие данные'
-            elif not to_value(dtype)(value):
-                print(value, dtype, key)
-                REQUEST_SETTINGS['error'] = ('Ошибка. Неверный тип данных.'
-                                             'допускается использование (int, float)')
-            else:
-                algo_data[key] = to_value(dtype)(value)
-        if 'formula_data' not in REQUEST_SETTINGS:
-            REQUEST_SETTINGS['formula_data'] = {}
-
-        REQUEST_SETTINGS['formula_data'].update(**algo_data)
+        algo_data = extract_conf_data(get_data)
 
         is_valid = validate_settings()
         if is_valid:
@@ -102,4 +89,78 @@ class EvaluteView(RedirectView):
             else:
                 REQUEST_SETTINGS['func_result'] = None
 
-        return url
+        return self.url
+
+
+class ConfigDefaultView(RedirectView):
+    url = '/result'
+
+    def get_redirect_url(self, *args, **kwargs):
+        formula = REQUEST_SETTINGS.get('formula')
+        if not formula:
+            REQUEST_SETTINGS['warning'] = 'Не установленна формула'
+        else:
+            CNF = PARAMS[formula[0]]
+            for i in CNF['CONFIG']:
+                REQUEST_SETTINGS['input_data'][i.key] = i.default_value
+
+        return self.url
+
+
+class RangeDefaultView(RedirectView):
+    url = '/result'
+
+    def get_redirect_url(self, *args, **kwargs):
+        formula = REQUEST_SETTINGS.get('formula')
+        if not formula:
+            REQUEST_SETTINGS['warning'] = 'Не установленна формула'
+        else:
+            CNF = PARAMS[formula[0]]
+            for i in CNF['RANGE']:
+                REQUEST_SETTINGS['input_data'][i.key] = i.default_value
+
+        return self.url
+
+
+class EvalRangeView(RedirectView):
+    url = '/result'
+
+    def partial_formula(self, algo_data, expression, formula):
+        data = {i: j for i, j in algo_data.items()}
+        cc = ComputationalCluster(expression)
+        alg = getattr(cc, formula)
+        return partial(alg, **data)
+
+    def get_redirect_url(self, *args, **kwargs):
+        get_data = self.request.GET
+
+        REQUEST_SETTINGS['success'] = True
+
+        range_data = extract_range_data(get_data)
+        algo_data = extract_conf_data(REQUEST_SETTINGS['input_data'])
+
+        is_valid = validate_settings()
+        if is_valid:
+            expression = REQUEST_SETTINGS['expression']
+            formula = REQUEST_SETTINGS['formula'][0]
+            fn1 = to_lambda(expression)
+            fn2 = self.partial_formula(algo_data, expression, formula)
+
+            try:
+                fn1_res = evaluate_range(**range_data, fn=fn1)
+            except Exception as e:
+                print(e)
+                REQUEST_SETTINGS['error'] = ('При вычислении апроксимированного значения '
+                                             'произошла ошибка. Проверье ограничения.')
+                return self.url
+            try:
+                fn2_res = evaluate_range(**range_data, fn=fn2, param='x')
+            except Exception as e:
+                print(e)
+                REQUEST_SETTINGS['error'] = ('При вычислении функции произошла ошибка. '
+                                             'Проверье ограничения.')
+                return self.url
+
+            REQUEST_SETTINGS['range_result'] = RangeResult(fn1_res, fn2_res)
+
+        return self.url
