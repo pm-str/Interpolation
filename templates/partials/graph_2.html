@@ -1,0 +1,46 @@
+<br>
+<div>
+  <canvas id="canvas2"></canvas>
+</div>
+
+<script>
+    var datapoints2 = {{ func_result.values }};
+    var constant2 = {{ func_result.results }};
+    var config2 = {
+        type: 'line',
+        data: {
+            labels: {{ func_result.labels }},
+            datasets: [{
+                label: 'График функции F(x))',
+                data: datapoints2,
+                borderColor: 'rgb(54, 162, 235)',
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+                fill: false
+            }, {
+                label: 'Интерполяция ({{ formula.1 }})',
+                data: constant2,
+                borderColor: 'rgb(255, 159, 64)',
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+                fill: false
+            }]
+        },
+        options: {
+            pan: {
+                enabled: true,
+                mode: 'y'
+            },
+
+            zoom: {
+                enabled: true,
+                mode: 'xy'
+            }
+        }
+    };
+    window.onload = function () {
+        var ctx = document.getElementById('canvas').getContext('2d');
+        window.myLine = new Chart(ctx, config);
+
+        var ctx2 = document.getElementById('canvas2').getContext('2d');
+        window.myLine2 = new Chart(ctx2, config2);
+    };
+</script>

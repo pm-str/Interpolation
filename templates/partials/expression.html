@@ -1,0 +1,21 @@
+{% load query_tags %}
+<form>
+  <div class="input-group">
+    {% if expression %}
+      <span class="input-group-addon" id="sizing-addon1">f(x)</span>
+    {% endif %}
+    <input type="text" name="expression" class="form-control"
+           placeholder="Задайте значение функции: e^(1/2)"
+           value="{% if expression %}{{ expression }}{% endif %}">
+    <span class="input-group-btn">
+        <button class="btn btn-primary" type="submit">Задать</button>
+      </span>
+  </div>
+</form>
+
+{% if func_result %}
+  <br/>
+  <div class="func-result">
+    <b>Значение функции: {{ func_result.result }}</b>
+  </div>
+{% endif %}

@@ -1,0 +1,15 @@
+{% load query_tags %}
+
+<form>
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+      {% if formula.1 %}{{ formula.1 }}{% else %}Выбор формулы{% endif %}
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="formulaDropdown">
+      {% for foo in algorithms %}
+        <a class="dropdown-item" href="?formula={{foo.0}}">{{ foo.1 }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</form>

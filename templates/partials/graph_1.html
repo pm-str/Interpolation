@@ -1,0 +1,39 @@
+<br>
+<div>
+  <canvas id="canvas"></canvas>
+</div>
+
+<script>
+    var datapoints = {{ func_result.values }};
+    var constant = {{ func_result.results }};
+    var config = {
+        type: 'line',
+        data: {
+            labels: {{ func_result.labels }},
+            datasets: [{
+                label: 'Приблизительное значение f(x)',
+                data: datapoints,
+                borderColor: 'rgb(54, 162, 235)',
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+                fill: false
+            }, {
+                label: 'Точное значение f(x) в точке X',
+                data: constant,
+                borderColor: 'rgb(255, 159, 64)',
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+                fill: false
+            }]
+        },
+        options: {
+            pan: {
+                enabled: true,
+                mode: 'y'
+            },
+
+            zoom: {
+                enabled: true,
+                mode: 'xy'
+            }
+        }
+    };
+</script>

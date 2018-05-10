@@ -1,0 +1,56 @@
+<form action="/evaluate">
+  <div class="text-right">
+    <a class="btn btn-md btn-default" href="clear">Сбросить все параметры</a>
+  </div>
+  <br/>
+  <table class="table table-bordered table-stripped">
+    <thead>
+    <tr>
+      <th>Параметр</th>
+      <th>Значение</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in formula_fields %}
+      <tr>
+        <td data-toggle="tooltip" title="{{ i.desc }}">{{ i.key }}</td>
+        <td><input class="form-control" name="{{ i.key }}" value="{{ i.value }}"/></td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="2" class="text-center">Пусто</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="text-right">
+    <button class="btn btn-md btn-primary" type="submit">Рассчитать</button>
+    <a class="btn btn-md btn-default pull-right" href="clear">По-умолчанию</a>
+  </div>
+</form>
+<br/>
+<form action="/evaluate">
+  <table class="table table-bordered table-stripped">
+    <thead>
+    <tr>
+      <th colspan="2">Диапазон вычисления</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in range_fields %}
+      <tr>
+        <td data-toggle="tooltip" title="{{ i.desc }}">{{ i.key }}</td>
+        <td><input class="form-control" name="{{ i.key }}" value="{{ i.value }}"/></td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="2" class="text-center">Empty</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="text-right">
+    <button class="btn btn-md btn-primary" type="submit">Установить</button>
+    <a class="btn btn-md btn-default" href="clear">По-умолчанию</a>
+  </div>
+</form>

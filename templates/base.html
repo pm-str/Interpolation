@@ -1,0 +1,78 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="{% static 'img/favicon.png' %}">
+
+  <title>Interpolation</title>
+
+  <!-- High priority google chart js script-->
+  <script src="{% static 'js/chartJS.js' %}"></script>
+  <script src="{% static 'js/hammer.min.js' %}"></script>
+  <script src="{% static 'js/chartjs-plugin-zoom.min.js' %}"></script>
+
+  {% block css %}
+    <!-- Bootstrap core CSS -->
+    <link href="{% static '/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/navbar-top.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  {% endblock %}
+</head>
+
+<body>
+
+<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse mb-4">
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+          aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="/">РГЗ 2</a>
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == '/task' %}active{% endif %}" href="/task">
+          Задание<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == '/result' %}active{% endif %}" href="/result">Реализация</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == '/additional' %}active{% endif %}" href="/additional">Дополнительно</a>
+      </li>
+    </ul>
+    <form class="form-inline mt-2 mt-md-0" action="https://www.google.com/search">
+      <input class="form-control mr-sm-2" type="text" name="q" placeholder="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+{% block js %}
+  <!-- Bootstrap core JavaScript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="{% static 'js/jquery-3.1.1.slim.min.js' %}"></script>
+  <script src="{% static 'js/tether.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+
+  <script>
+      $(document).ready(function () {
+          $('[data-toggle="tooltip"]').tooltip();
+      });
+  </script>
+
+{% endblock %}
+</body>
+</html>
