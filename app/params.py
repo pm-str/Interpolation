@@ -54,6 +54,7 @@ DEFAULT_RANGE = [
     ConfData('Начало диапазон X0', 'x_start', 0, float),
     ConfData('Конец диапазон Xk', 'x_end', 8, float),
     ConfData('Шаг S', 'step', 1, float),
+    ConfData('Количество итераций n', 'n', 5, int),
 ]
 
 PARAMS = {

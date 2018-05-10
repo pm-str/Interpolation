@@ -137,7 +137,9 @@ class EvalRangeView(RedirectView):
         REQUEST_SETTINGS['success'] = True
 
         range_data = extract_range_data(get_data)
-        algo_data = extract_conf_data(REQUEST_SETTINGS['input_data'])
+        algo_data = REQUEST_SETTINGS['input_data']
+        algo_data.update(range_data)
+        algo_data = extract_conf_data(algo_data)
 
         is_valid = validate_settings()
         if is_valid:

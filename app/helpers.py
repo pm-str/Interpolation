@@ -9,7 +9,7 @@ def to_lambda(str_func, trans=TRANSFORMATIONS, symbol=Symbol('x')):
     return lambdify(symbol, func, 'numpy')
 
 
-def evaluate_range(x_start, x_end, step, fn, param=None):
+def evaluate_range(x_start, x_end, step, fn, param=None, **kwargs):
     """Array of function's results
 
     Arguments:
