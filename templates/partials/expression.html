@@ -13,8 +13,13 @@
   </div>
 </form>
 
-{% if func_result %}
+{% if func_parsed %}
   <br/>
+  <div class="func-result">
+    <b>Полученная функция: {{ func_parsed }}</b>
+  </div>
+{% endif %}
+{% if func_result %}
   <div class="func-result">
     <b>Значение функции: {{ func_result.result }}</b>
   </div>

@@ -1,3 +1,4 @@
+import numpy as np
 from typing import List
 
 
@@ -9,8 +10,12 @@ class ConfData:
         self.dtype = dtype
 
     @property
+    def type_name(self):
+        return self.dtype.__name__
+
+    @property
     def desc(self):
-        return f'{self._desc} <{self.dtype.__name__}>'
+        return f'{self._desc} <{self.type_name}>'
 
     @property
     def default_value(self):
@@ -33,13 +38,26 @@ class AlgorithmResult:
 
 
 class RangeResult:
-    def __init__(self, values1, values2: List[AlgorithmResult]):
+    def __init__(self, values1, values2: List[AlgorithmResult], labels1=None, labels2=None):
         self.values1 = values1
-        self.labels1 = list(range(1, len(values1)+1))
-
         self.values2 = [i.result for i in values2]
-        self.labels2 = list(range(1, len(values2)+1))
+        self.labels1 = labels1
+        self.labels2 = labels2
 
+
+        if not labels1:
+            self.set_labels1()
+
+        if not labels2:
+            self.set_labels2()
+
+    def set_labels1(self, start=1, end=None, step=1):
+        end = (end or len(self.values1)) + 1
+        self.labels1 = list(np.arange(start, end, step))
+
+    def set_labels2(self, start=1, end=None, step=1):
+        end = (end or len(self.values2)) + 1
+        self.labels2 = list(np.arange(start, end, step))
 
 
 MACKLOREN = 'mackloren'
@@ -54,14 +72,16 @@ DEFAULT_RANGE = [
     ConfData('Начало диапазон X0', 'x_start', 0, float),
     ConfData('Конец диапазон Xk', 'x_end', 8, float),
     ConfData('Шаг S', 'step', 1, float),
-    ConfData('Количество итераций n', 'n', 5, int),
+    ConfData('Количество итераций K', 'k', 5, int),
 ]
+
+NONE = '–'
 
 PARAMS = {
     MACKLOREN: {
         'CONFIG': [
             ConfData('Количество итераций N', 'n', 15, int),
-            ConfData('Окрестность поиска, точка X', 'x', None, float),
+            ConfData('Окрестность поиска, точка X', 'x', NONE, float),
         ],
         'RANGE': DEFAULT_RANGE
     },
@@ -69,11 +89,10 @@ PARAMS = {
         'CONFIG': [
             ConfData('Значение функции в точке X0', 'x0', 2, float),
             ConfData('Количество итераций N', 'n', 15, int),
-            ConfData('Окрестность поиска, точка X', 'x', None, float),
+            ConfData('Окрестность поиска, точка X', 'x', NONE, float),
         ],
         'RANGE': DEFAULT_RANGE
     }
 }
 
 REQUEST_SETTINGS = {}
-REQUEST_QUERY = {}

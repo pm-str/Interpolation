@@ -10,11 +10,11 @@ from sympy.parsing.sympy_parser import (
 from app.params import REQUEST_SETTINGS
 
 TRANSFORMATIONS = standard_transformations + (
-    implicit_multiplication,
     convert_xor,
     implicit_application,
     function_exponentiation,
     implicit_multiplication_application,
+    implicit_multiplication,
 )
 ITERATIONS = 5
 
@@ -52,8 +52,8 @@ def extract_conf_data(get_data):
             REQUEST_SETTINGS['error'] = 'Ошибка. Введите недостающие данные'
         elif not svalue and svalue != 0:
             print(value, dtype, key)
-            REQUEST_SETTINGS['error'] = (f'Ошибка. Неверный тип данных <{key}>. '
-                                         'Обратитесь к описанию параметров')
+            REQUEST_SETTINGS['error'] = (f'Ошибка. Неверный тип данных для ({field.key}). '
+                                         f'Допускается использование ({field.type_name})')
         else:
             algo_data[key] = to_value(dtype)(value)
 
@@ -77,8 +77,8 @@ def extract_range_data(get_data):
             REQUEST_SETTINGS['error'] = 'Ошибка. Введите недостающие данные'
         elif not svalue and svalue != 0:
             print(value, dtype, key)
-            REQUEST_SETTINGS['error'] = (f'Ошибка. Неверный тип данных <{key}>. '
-                                         'Обратитесь к описанию параметров')
+            REQUEST_SETTINGS['error'] = (f'Ошибка. Неверный тип данных для ({field.key}). '
+                                         f'Допускается использование ({field.type_name})')
         else:
             algo_data[key] = to_value(dtype)(value)
 

@@ -3,10 +3,10 @@ from functools import partial
 from django.views.generic import TemplateView, RedirectView
 
 from app.algorithms import ComputationalCluster
-from app.helpers import to_lambda, evaluate_range
-from app.utils import to_value, extract_conf_data, extract_range_data
+from app.helpers import to_lambda, evaluate_range, to_parsed
+from app.utils import extract_conf_data, extract_range_data
 from app.validators import validate_settings, clear_validators, validate_algo_response
-from .params import PARAMS, ALGORITHMS, REQUEST_SETTINGS, REQUEST_QUERY, RangeResult
+from .params import PARAMS, ALGORITHMS, REQUEST_SETTINGS, RangeResult
 
 
 class TaskView(TemplateView):
@@ -19,21 +19,18 @@ class ResultView(TemplateView):
     def get_context_data(self, **kwargs):
         clear_validators()
         kwargs['algorithms'] = ALGORITHMS.items()
-        kwargs['query_params'] = REQUEST_QUERY.items()
 
         return kwargs
 
     def get(self, request, *args, **kwargs):
         params = dict(request.GET)
         new_context = {}
-        new_query = {}
 
         formula = params.get('formula', [None])[0]
         if formula and formula in ALGORITHMS.keys():
             CNF = PARAMS[formula]
 
             new_context['formula'] = (formula, ALGORITHMS[formula])
-            new_query['formula'] = formula
 
             new_context['formula_fields'] = CNF['CONFIG']
             new_context['range_fields'] = CNF['RANGE']
@@ -41,10 +38,14 @@ class ResultView(TemplateView):
         expr = params.get('expression')
         if expr:
             new_context['expression'] = expr[0]
-            new_query['expression'] = expr[0]
+            try:
+                new_context['func_parsed'] = to_parsed(expr[0])
+            except Exception as e:
+                print(e)
+                REQUEST_SETTINGS['error'] = ("Данное выражение не может быть вычисленно. "
+                                             "Проверьте допустимый синтаксис.")
 
         REQUEST_SETTINGS.update(**new_context)
-        REQUEST_QUERY.update(**new_query)
 
         context = self.get_context_data(**kwargs, **REQUEST_SETTINGS)
 
@@ -140,6 +141,7 @@ class EvalRangeView(RedirectView):
         algo_data = REQUEST_SETTINGS['input_data']
         algo_data.update(range_data)
         algo_data = extract_conf_data(algo_data)
+        algo_data['n'] = range_data.get('k')
 
         is_valid = validate_settings()
         if is_valid:
@@ -163,6 +165,10 @@ class EvalRangeView(RedirectView):
                                              'Проверье ограничения.')
                 return self.url
 
-            REQUEST_SETTINGS['range_result'] = RangeResult(fn1_res, fn2_res)
+            range_res = RangeResult(fn1_res, fn2_res)
+            start, end, step = range_data['x_start'], range_data['x_end'], range_data['step']
+            range_res.set_labels1(start, end, step)
+            range_res.set_labels2(start, end, step)
+            REQUEST_SETTINGS['range_result'] = range_res
 
         return self.url
