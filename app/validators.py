@@ -1,4 +1,10 @@
-from app.params import REQUEST_SETTINGS
+from app.params import REQUEST_SETTINGS, AlgorithmResult
+
+
+TIPS = {
+    'overflow encountered in double_scalars': 'Попробуйте уменьшить значение параметров или количество итераций',
+    'default': 'Проверьте допустимые значения параметров и уменьшите количество итераций',
+}
 
 
 def validate_settings():
@@ -35,10 +41,17 @@ def validate_algo_response(result):
                                      '"Дополнительно" (SymPy Modules)')
     if isinstance(result, AssertionError):
         REQUEST_SETTINGS['error'] = result.args[0]
-        REQUEST_SETTINGS['func_result'] = result.args[1]
+        REQUEST_SETTINGS['func_result'] = AlgorithmResult(result.args[1])
         return
 
     if isinstance(result, SyntaxError):
         REQUEST_SETTINGS['error'] = 'Данное выражение содержит ошибку. Проверьте и попробуйте еще раз'
         return
+
+    if isinstance(result, RuntimeWarning):
+        stacktrace = result.args[0]
+        tips = TIPS.get(stacktrace, TIPS['default'])
+        REQUEST_SETTINGS['error'] = f'Была обнаружена ошибка: {stacktrace}. Совет: {tips}'
+        return
+
     return True

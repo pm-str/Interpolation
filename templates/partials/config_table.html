@@ -26,7 +26,7 @@
               {% endfor %}
             </select>
           {% else %}
-            <input type="number" max="{{ i.maxi }}" min="{{ i.mini }}"
+            <input type="number" step=any max="{{ i.maxi }}" min="{{ i.mini }}"
                    class="form-control" name="{{ i.key }}" value="{{ i.value }}"/>
           {% endif %}
 

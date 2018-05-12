@@ -64,11 +64,15 @@ class RangeResult:
 MACKLOREN = 'mackloren'
 TEYLOR = 'teylor'
 CHEBISHEV = 'chebishev'
+LAGRANZE = 'lagranzh'
+EITKEN = 'eitken'
 
 ALGORITHMS = {
     MACKLOREN: 'Формула Маклорена',
     TEYLOR: 'Формула Тейлора',
     CHEBISHEV: 'Формулы Чебышева',
+    LAGRANZE: 'Многочлен Лагранжа',
+    EITKEN: 'Cхема Эйткена',
 }
 
 DEFAULT_RANGE = [
@@ -82,29 +86,55 @@ NONE = '–'
 
 PARAMS = {
     MACKLOREN: {
+        'FUNCTION_REQUIRED': True,
         'CONFIG': [
+            ConfData('Окрестность поиска, точка X', 'x', 4, float),
             ConfData('Количество итераций N', 'n', 15, int),
-            ConfData('Окрестность поиска, точка X', 'x', NONE, float),
         ],
         'RANGE': DEFAULT_RANGE
     },
     TEYLOR: {
+        'FUNCTION_REQUIRED': True,
         'CONFIG': [
+            ConfData('Окрестность поиска, точка X', 'x', 5, float),
             ConfData('Значение функции в точке X0', 'x0', 2, float),
             ConfData('Количество итераций N', 'n', 15, int),
-            ConfData('Окрестность поиска, точка X', 'x', NONE, float),
         ],
         'RANGE': DEFAULT_RANGE
     },
     CHEBISHEV: {
+        'FUNCTION_REQUIRED': False,
         'CONFIG': [
-            ConfData('Окрестность поиска, точка X', 'x', NONE, float),
-            ConfData('Количество итераций N, max(N) = 10', 'n', 15, int),
+            ConfData('Окрестность поиска, точка X', 'x', 0.15, float, 0, 1),
             ConfData(
                 'Тип формулы', 'f_type', 1, int, 1, 5, [
                     'Экспонента', 'Натуральный логорифм', 'Синус', 'Косинус', 'Тангенс',
                 ]
             ),
+            ConfData('Допустимое оличество итераций N, max(N) = 10', 'n', 9, int),
+        ],
+        'RANGE': DEFAULT_RANGE
+    },
+    LAGRANZE: {
+        'FUNCTION_REQUIRED': False,
+        'CONFIG': [
+            ConfData('Окрестность поиска, точка X', 'x', 0.6, float, 0.5, 1.2),
+            ConfData(
+                'Тип формулы', 'f_type', 1, int, 1, 5, [
+                    'Экспонента', 'Синус', 'Косинус', 'Тангенс', 'Натуральный логорифм',
+                ]
+            ),
+            ConfData('Допустимое количество итераций N, max(N) = 8', 'n', 7, int),
+        ],
+        'RANGE': DEFAULT_RANGE
+    },
+    EITKEN: {
+        'FUNCTION_REQUIRED': True,
+        'CONFIG': [
+            ConfData('Окрестность поиска, точка X', 'x', 2.310004, float, -1e3, 1e3),
+            ConfData('X начальное в таблице известных значений', 'x_0', 1, float, -1e6, 1e6),
+            ConfData('X конечное в таблице известных значений', 'x_n', 3, float, -1e6, 1e6),
+            ConfData('Шаг st при генерации таблицы значений', 'st', 0.1, float, 1e-4, 1e3),
         ],
         'RANGE': DEFAULT_RANGE
     }
