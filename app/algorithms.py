@@ -1,9 +1,12 @@
 import numpy as np
 import warnings
 from typing import Callable
+
+from collections import defaultdict
 from sympy import Symbol, lambdify, Add
 from sympy.parsing.sympy_parser import parse_expr
 
+from app.messages import FUNC_DOES_NOT_EXIST, ZERO_DIVISION
 from app.params import AlgorithmResult
 from app.utils import *
 
@@ -65,7 +68,7 @@ class ComputationalCluster:
                 lambda_result = self.lambda_func(func_v, Symbol('x'))(x0)
                 if 'inf' in str(lambda_result):
                     return AssertionError(
-                        'Выполнено деление на ноль. Измените выражение или поменяйте метод',
+                        ZERO_DIVISION,
                         str(lambda_result),
                     )
             except Exception as e:
@@ -137,14 +140,14 @@ class ComputationalCluster:
 
         return fn(x, n, xs, ys)
 
-    def eitken(self, x, x_0, x_n, st, n=100):
+    def eitken(self, x, x_0, x_n, st, *args, **kwargs):
         xs = list(np.arange(x_0, x_n, st))
         func = self.lambda_func(self.parsed_func, Symbol('x'))
         try:
             ys = [func(i) for i in xs]
         except Exception as e:
             print(e)
-            return AssertionError('Функция не может существовать в данной области значений', None)
+            return AssertionError(FUNC_DOES_NOT_EXIST, None)
         
         ps = ys.copy()
         values = []
@@ -164,9 +167,68 @@ class ComputationalCluster:
             ps = tmp.copy()
             values.append(ps[0])
 
-        return AlgorithmResult(ps[0], values)
+    def get_q(self, x, x0n, h):
+        q = (x - x0n) / h
+
+        yield 1
+
+        k = 0
+        res = 1
+
+        while True:
+            res *= (q+k)
+            k += 1
+            yield res
+
+    def get_diff(self, ys):
+        def calc(dg, n):
+            if dg == 0:
+                return ys[n]
+            elif n in hash.get(dg, {}):
+                return hash[dg][n]
+            else:
+                hash[dg][n] = calc(dg-1, n+1) - calc(dg-1, n)
+
+            return hash[dg][n]
+
+        yield ys[-1]
+
+        ind = len(ys) - 2
+        degree = 1
+        hash = defaultdict(dict)
+
+        while True:
+            yield calc(degree, ind)
+            degree += 1
+            ind -= 1
+
+    def nueton_one(self, x, x_0, x_n, st, *args, **kwargs):
+        xs = list(np.arange(x_0, x_n, st))
+        func = self.lambda_func(self.parsed_func, Symbol('x'))
+        try:
+            ys = [func(i) for i in xs]
+        except Exception as e:
+            print(e)
+            return AssertionError(FUNC_DOES_NOT_EXIST, None)
+
+        res = 0
+        values = []
+        h = st
+
+        q = self.get_q(x, xs[-1], h)
+        diff = self.get_diff(ys)
+        fact = self.fact()
+
+        for i in range(len(ys)):
+            q_res = next(q)
+            diff_res = next(diff)
+            fact_res = next(fact)
+
+            res += diff_res * q_res/fact_res
+
+        return AlgorithmResult(res, values)
 
 
 if __name__ == '__main__':
     cc = ComputationalCluster('E^x')
-    print(cc.eitken(1, 0, 2, 0.2))
+    print(cc.nueton(1, 0.5, 1.3, 0.1))
