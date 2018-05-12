@@ -5,12 +5,12 @@
 
 <script>
     {% if range_result %}
-        var datapoints2 = {{ range_result.values1 }};
-        var datapoints3 = {{ range_result.values2 }};
+        var datapoints2 = {{ range_result.0.values }};
+        var datapoints3 = {{ range_result.1.values }};
         var config2 = {
             type: 'line',
             data: {
-                labels: {{ range_result.labels1 }},
+                labels: {{ range_result.0.labels }},
                 datasets: [{
                     label: 'График функции F(x))',
                     data: datapoints2,
@@ -33,7 +33,7 @@
 
                 zoom: {
                     enabled: true,
-                    mode: 'xy'
+                    mode: 'y'
                 }
             }
         };

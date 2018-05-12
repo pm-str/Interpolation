@@ -3,11 +3,14 @@ from typing import List
 
 
 class ConfData:
-    def __init__(self, desc, key, value=None, dtype=None):
+    def __init__(self, desc, key, value=None, dtype=None, mini=None, maxi=None, select=None):
         self._desc = desc
         self.key = key
         self._value = value
         self.dtype = dtype
+        self.maxi = maxi
+        self.mini = mini
+        self.select = select
 
     @property
     def type_name(self):
@@ -35,37 +38,37 @@ class AlgorithmResult:
         self.values = values or []
         self.labels = list(range(1, len(values) + 1))
         self.results = [result] * len(values)
+        self.iters = len(values)
 
 
 class RangeResult:
-    def __init__(self, values1, values2: List[AlgorithmResult], labels1=None, labels2=None):
-        self.values1 = values1
-        self.values2 = [i.result for i in values2]
-        self.labels1 = labels1
-        self.labels2 = labels2
+    def __init__(self, values, labels):
+        self.values = []
+        self.labels = []
 
+        for i, label in zip(values, labels):
+            value = i.result if hasattr(i, 'result') else i
+            if not self.is_inf(value):
+                self.values.append(value)
+            else:
+                self.values.append(0)
+            self.labels.append(label)
 
-        if not labels1:
-            self.set_labels1()
-
-        if not labels2:
-            self.set_labels2()
-
-    def set_labels1(self, start=1, end=None, step=1):
-        end = (end or len(self.values1)) + 1
-        self.labels1 = list(np.arange(start, end, step))
-
-    def set_labels2(self, start=1, end=None, step=1):
-        end = (end or len(self.values2)) + 1
-        self.labels2 = list(np.arange(start, end, step))
+    @staticmethod
+    def is_inf(value):
+        if abs(value) == np.inf:
+            return True
+        return False
 
 
 MACKLOREN = 'mackloren'
 TEYLOR = 'teylor'
+CHEBISHEV = 'chebishev'
 
 ALGORITHMS = {
     MACKLOREN: 'Формула Маклорена',
     TEYLOR: 'Формула Тейлора',
+    CHEBISHEV: 'Формулы Чебышева',
 }
 
 DEFAULT_RANGE = [
@@ -90,6 +93,18 @@ PARAMS = {
             ConfData('Значение функции в точке X0', 'x0', 2, float),
             ConfData('Количество итераций N', 'n', 15, int),
             ConfData('Окрестность поиска, точка X', 'x', NONE, float),
+        ],
+        'RANGE': DEFAULT_RANGE
+    },
+    CHEBISHEV: {
+        'CONFIG': [
+            ConfData('Окрестность поиска, точка X', 'x', NONE, float),
+            ConfData('Количество итераций N, max(N) = 10', 'n', 15, int),
+            ConfData(
+                'Тип формулы', 'f_type', 1, int, 1, 5, [
+                    'Экспонента', 'Натуральный логорифм', 'Синус', 'Косинус', 'Тангенс',
+                ]
+            ),
         ],
         'RANGE': DEFAULT_RANGE
     }

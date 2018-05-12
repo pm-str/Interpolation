@@ -47,10 +47,9 @@ def extract_conf_data(get_data):
         key = field.key
         value = get_data.get(key)
         dtype = field.dtype or float
-        svalue = to_value(dtype)(value)
         if not value:
             REQUEST_SETTINGS['error'] = 'Ошибка. Введите недостающие данные'
-        elif not svalue and svalue != 0:
+        elif not to_value(dtype)(value) and to_value(dtype)(value) != 0:
             print(value, dtype, key)
             REQUEST_SETTINGS['error'] = (f'Ошибка. Неверный тип данных для ({field.key}). '
                                          f'Допускается использование ({field.type_name})')
@@ -72,10 +71,9 @@ def extract_range_data(get_data):
         key = field.key
         value = get_data.get(key)
         dtype = field.dtype or float
-        svalue = to_value(dtype)(value)
         if not value:
             REQUEST_SETTINGS['error'] = 'Ошибка. Введите недостающие данные'
-        elif not svalue and svalue != 0:
+        elif not to_value(dtype)(value) and to_value(dtype)(value) != 0:
             print(value, dtype, key)
             REQUEST_SETTINGS['error'] = (f'Ошибка. Неверный тип данных для ({field.key}). '
                                          f'Допускается использование ({field.type_name})')

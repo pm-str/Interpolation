@@ -1,6 +1,7 @@
 from sympy.parsing.sympy_parser import parse_expr
 from sympy import Symbol, lambdify
 
+from app.params import RangeResult
 from app.utils import TRANSFORMATIONS
 
 
@@ -13,21 +14,22 @@ def to_lambda(str_func, trans=TRANSFORMATIONS, symbol=Symbol('x')):
 
 
 def evaluate_range(x_start, x_end, step, fn, param=None, **kwargs):
-    print(x_start, x_end, step, fn)
     """Array of function's results
 
     Arguments:
         param: name of the argument, for example, 'x'
     """
 
-    res = []
+    values = []
+    labels = []
     x = x_start
     while x <= x_end:
         if param:
             data = {param: x}
-            res.append(fn(**data))
+            values.append(fn(**data))
         else:
-            res.append(fn(x))
+            values.append(fn(x))
+        labels.append(x)
         x += step
 
-    return res
+    return RangeResult(values, labels)

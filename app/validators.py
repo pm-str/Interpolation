@@ -33,6 +33,9 @@ def validate_algo_response(result):
         REQUEST_SETTINGS['error'] = ('Введенная вами формула обработана с ошибкой. '
                                      'Сведения об используемом синтаксисе можно найти на странице '
                                      '"Дополнительно" (SymPy Modules)')
+    if isinstance(result, AssertionError):
+        REQUEST_SETTINGS['error'] = result.args[0]
+        REQUEST_SETTINGS['func_result'] = result.args[1]
         return
 
     if isinstance(result, SyntaxError):

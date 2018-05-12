@@ -34,6 +34,9 @@ class ResultView(TemplateView):
 
             new_context['formula_fields'] = CNF['CONFIG']
             new_context['range_fields'] = CNF['RANGE']
+            new_context['input_data'] = {}
+            new_context['func_result'] = {}
+            new_context['range_result'] = {}
 
         expr = params.get('expression')
         if expr:
@@ -72,6 +75,7 @@ class EvalFormulaView(RedirectView):
         get_data = self.request.GET
 
         REQUEST_SETTINGS['success'] = True
+        REQUEST_SETTINGS['func_result'] = None
 
         algo_data = extract_conf_data(get_data)
 
@@ -87,8 +91,6 @@ class EvalFormulaView(RedirectView):
             is_valid = validate_algo_response(result)
             if is_valid:
                 REQUEST_SETTINGS['func_result'] = result
-            else:
-                REQUEST_SETTINGS['func_result'] = None
 
         return self.url
 
@@ -165,10 +167,6 @@ class EvalRangeView(RedirectView):
                                              'Проверье ограничения.')
                 return self.url
 
-            range_res = RangeResult(fn1_res, fn2_res)
-            start, end, step = range_data['x_start'], range_data['x_end'], range_data['step']
-            range_res.set_labels1(start, end, step)
-            range_res.set_labels2(start, end, step)
-            REQUEST_SETTINGS['range_result'] = range_res
+            REQUEST_SETTINGS['range_result'] = [fn1_res, fn2_res]
 
         return self.url

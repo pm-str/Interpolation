@@ -21,6 +21,6 @@
 {% endif %}
 {% if func_result %}
   <div class="func-result">
-    <b>Значение функции: {{ func_result.result }}</b>
+    <b>Значение функции: {% if func_result.result %}{{ func_result.result }}{% else %}{{ func_result }}{% endif %}</b>
   </div>
 {% endif %}

@@ -14,7 +14,23 @@
     {% for i in formula_fields %}
       <tr>
         <td data-toggle="tooltip" title="{{ i.desc }}">{{ i.key }}</td>
-        <td><input class="form-control" name="{{ i.key }}" value="{{ i.value }}"/></td>
+        <td>
+          {% if i.select %}
+            <select class="form-control" name="f_type" required>
+              {% for j in i.select %}
+                <option
+                        {% if i.value == forloop.counter %}
+                        selected="selected"
+                        {% endif %}
+                        value="{{ forloop.counter }}">{{ j }}</option>
+              {% endfor %}
+            </select>
+          {% else %}
+            <input type="number" max="{{ i.maxi }}" min="{{ i.mini }}"
+                   class="form-control" name="{{ i.key }}" value="{{ i.value }}"/>
+          {% endif %}
+
+        </td>
       </tr>
     {% empty %}
       <tr>
