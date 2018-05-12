@@ -167,8 +167,8 @@ class ComputationalCluster:
             ps = tmp.copy()
             values.append(ps[0])
 
-    def get_q(self, x, x0n, h):
-        q = (x - x0n) / h
+    def get_q(self, x, xs, h, first=False):
+        q = (x - (xs[0] if first else xs[-1])) / h
 
         yield 1
 
@@ -177,10 +177,10 @@ class ComputationalCluster:
 
         while True:
             res *= (q+k)
-            k += 1
+            k = k - 1 if first else k + 1
             yield res
 
-    def get_diff(self, ys):
+    def get_diff(self, ys, first=False):
         def calc(dg, n):
             if dg == 0:
                 return ys[n]
@@ -191,18 +191,23 @@ class ComputationalCluster:
 
             return hash[dg][n]
 
-        yield ys[-1]
+        if first:
+            yield ys[0]
+            ind = 0
+            degree = 1
+        else:
+            yield ys[-1]
+            ind = len(ys) - 2
+            degree = 1
 
-        ind = len(ys) - 2
-        degree = 1
         hash = defaultdict(dict)
 
         while True:
             yield calc(degree, ind)
             degree += 1
-            ind -= 1
+            ind = ind + 0 if first else ind - 1
 
-    def nueton_one(self, x, x_0, x_n, st, *args, **kwargs):
+    def nueton(self, x, x_0, x_n, st, first=False, **kwargs):
         xs = list(np.arange(x_0, x_n, st))
         func = self.lambda_func(self.parsed_func, Symbol('x'))
         try:
@@ -215,8 +220,9 @@ class ComputationalCluster:
         values = []
         h = st
 
-        q = self.get_q(x, xs[-1], h)
-        diff = self.get_diff(ys)
+        q = self.get_q(x, xs, h, first)
+
+        diff = self.get_diff(ys, first)
         fact = self.fact()
 
         for i in range(len(ys)):
@@ -225,10 +231,19 @@ class ComputationalCluster:
             fact_res = next(fact)
 
             res += diff_res * q_res/fact_res
+            values.append(res)
 
         return AlgorithmResult(res, values)
+
+    def nueton_one(self, *args, **kwargs):
+        kwargs.update({'first': True})
+        return self.nueton(*args, **kwargs)
+
+    def nueton_two(self, *args, **kwargs):
+        return self.nueton(*args, **kwargs)
 
 
 if __name__ == '__main__':
     cc = ComputationalCluster('E^x')
-    print(cc.nueton(1, 0.5, 1.3, 0.1))
+    print(cc.nueton_one(1, 0.5, 1.3, 0.1).result)
+    print(cc.nueton_two(1, 0.5, 1.3, 0.1).result)

@@ -66,6 +66,8 @@ TEYLOR = 'teylor'
 CHEBISHEV = 'chebishev'
 LAGRANZE = 'lagranzh'
 EITKEN = 'eitken'
+NUETON_ONE = 'nueton_one'
+NUETON_TWO = 'nueton_two'
 
 ALGORITHMS = {
     MACKLOREN: 'Формула Маклорена',
@@ -73,6 +75,8 @@ ALGORITHMS = {
     CHEBISHEV: 'Формулы Чебышева',
     LAGRANZE: 'Многочлен Лагранжа',
     EITKEN: 'Cхема Эйткена',
+    NUETON_ONE: 'Первая формула Ньютона',
+    NUETON_TWO: 'Вторая формула Ньютона',
 }
 
 DEFAULT_RANGE = [
@@ -136,7 +140,39 @@ PARAMS = {
             ConfData('X конечное в таблице известных значений', 'x_n', 3, float, -1e6, 1e6),
             ConfData('Шаг st при генерации таблицы значений', 'st', 0.1, float, 1e-4, 1e3),
         ],
-        'RANGE': DEFAULT_RANGE
+        'RANGE': [
+            ConfData('Начало диапазон X0', 'x_start', 1, float),
+            ConfData('Конец диапазон Xk', 'x_end', 3, float),
+            ConfData('Шаг S', 'step', 0.2, float),
+        ]
+    },
+    NUETON_ONE: {
+        'FUNCTION_REQUIRED': True,
+        'CONFIG': [
+            ConfData('Окрестность поиска, точка X', 'x', 1.0001, float, -1e3, 1e3),
+            ConfData('X начальное в таблице известных значений', 'x_0', 0, float, -1e6, 1e6),
+            ConfData('X конечное в таблице известных значений', 'x_n', 2, float, -1e6, 1e6),
+            ConfData('Шаг st при генерации таблицы значений', 'st', 0.1, float, 1e-4, 1e3),
+        ],
+        'RANGE': [
+            ConfData('Начало диапазон X0', 'x_start', 0.1, float),
+            ConfData('Конец диапазон Xk', 'x_end', 1.9, float),
+            ConfData('Шаг S', 'step', 0.2, float),
+        ]
+    },
+    NUETON_TWO: {
+        'FUNCTION_REQUIRED': True,
+        'CONFIG': [
+            ConfData('Окрестность поиска, точка X', 'x', 2.310004, float, -1e3, 1e3),
+            ConfData('X начальное в таблице известных значений', 'x_0', 1, float, -1e6, 1e6),
+            ConfData('X конечное в таблице известных значений', 'x_n', 5, float, -1e6, 1e6),
+            ConfData('Шаг st при генерации таблицы значений', 'st', 0.1, float, 1e-4, 1e3),
+        ],
+        'RANGE': [
+            ConfData('Начало диапазон X0', 'x_start', 1, float),
+            ConfData('Конец диапазон Xk', 'x_end', 5, float),
+            ConfData('Шаг S', 'step', 0.5, float),
+        ]
     }
 }
 
