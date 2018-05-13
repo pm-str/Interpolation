@@ -68,6 +68,7 @@ LAGRANZE = 'lagranzh'
 EITKEN = 'eitken'
 NUETON_ONE = 'nueton_one'
 NUETON_TWO = 'nueton_two'
+GAUSS = 'gauss'
 
 ALGORITHMS = {
     MACKLOREN: 'Формула Маклорена',
@@ -75,14 +76,15 @@ ALGORITHMS = {
     CHEBISHEV: 'Формулы Чебышева',
     LAGRANZE: 'Многочлен Лагранжа',
     EITKEN: 'Cхема Эйткена',
-    NUETON_ONE: 'Первая формула Ньютона',
-    NUETON_TWO: 'Вторая формула Ньютона',
+    NUETON_ONE: 'Первая интер. формула Ньютона',
+    NUETON_TWO: 'Вторая интер. формула Ньютона',
+    GAUSS: 'Первая интер. формула Гаусса',
 }
 
 DEFAULT_RANGE = [
     ConfData('Начало диапазон X0', 'x_start', 0, float),
     ConfData('Конец диапазон Xk', 'x_end', 8, float),
-    ConfData('Шаг S', 'step', 1, float),
+    ConfData('Шаг S на заданном интервале', 'step', 1, float),
     ConfData('Количество итераций K', 'k', 5, int),
 ]
 
@@ -143,7 +145,7 @@ PARAMS = {
         'RANGE': [
             ConfData('Начало диапазон X0', 'x_start', 1, float),
             ConfData('Конец диапазон Xk', 'x_end', 3, float),
-            ConfData('Шаг S', 'step', 0.2, float),
+            ConfData('Шаг S на заданном интервале', 'step', 0.2, float),
         ]
     },
     NUETON_ONE: {
@@ -157,7 +159,7 @@ PARAMS = {
         'RANGE': [
             ConfData('Начало диапазон X0', 'x_start', 0.1, float),
             ConfData('Конец диапазон Xk', 'x_end', 1.9, float),
-            ConfData('Шаг S', 'step', 0.2, float),
+            ConfData('Шаг S на заданном интервале', 'step', 0.2, float),
         ]
     },
     NUETON_TWO: {
@@ -169,9 +171,23 @@ PARAMS = {
             ConfData('Шаг st при генерации таблицы значений', 'st', 0.1, float, 1e-4, 1e3),
         ],
         'RANGE': [
-            ConfData('Начало диапазон X0', 'x_start', 1, float),
-            ConfData('Конец диапазон Xk', 'x_end', 5, float),
-            ConfData('Шаг S', 'step', 0.5, float),
+            ConfData('Начало диапазона X0', 'x_start', 1, float),
+            ConfData('Конец диапазона Xk', 'x_end', 5, float),
+            ConfData('Шаг S на заданном интервале', 'step', 0.5, float),
+        ]
+    },
+    GAUSS: {
+        'FUNCTION_REQUIRED': True,
+        'CONFIG': [
+            ConfData('Окрестность поиска, точка X', 'x', 1, float, -1e3, 1e3),
+            ConfData('X начальное в таблице известных значений', 'x_0', 1.15, float, -1e6, 1e6),
+            ConfData('Количество шагов n', 'n', 10, int, -1000, 1000),
+            ConfData('Шаг h в формуле x = x0 + th', 'h', 0.1, float, 1e-4, 1e3),
+        ],
+        'RANGE': [
+            ConfData('Начало диапазон X0', 'x_start', 0, float),
+            ConfData('Конец диапазон Xk', 'x_end', 1, float),
+            ConfData('Шаг S при сравнении значений на заданном интервале', 'step', 0.1, float),
         ]
     }
 }

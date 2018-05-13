@@ -143,7 +143,7 @@ class EvalRangeView(RedirectView):
         algo_data = REQUEST_SETTINGS['input_data']
         algo_data.update(range_data)
         algo_data = extract_conf_data(algo_data)
-        algo_data['n'] = range_data.get('k')
+        algo_data['n'] = range_data.get('k', algo_data.get('n'))
 
         is_valid = validate_settings()
         if is_valid:
@@ -156,15 +156,15 @@ class EvalRangeView(RedirectView):
                 fn1_res = evaluate_range(**range_data, fn=fn1)
             except Exception as e:
                 print(e)
-                REQUEST_SETTINGS['error'] = ('При вычислении апроксимированного значения '
-                                             'произошла ошибка. Проверье ограничения.')
+                REQUEST_SETTINGS['error'] = ('При вычислении функции произошла ошибка. '
+                                             'Проверье ограничения.')
                 return self.url
             try:
                 fn2_res = evaluate_range(**range_data, fn=fn2, param='x')
             except Exception as e:
                 print(e)
-                REQUEST_SETTINGS['error'] = ('При вычислении функции произошла ошибка. '
-                                             'Проверье ограничения.')
+                REQUEST_SETTINGS['error'] = ('При вычислении апроксимированного значения '
+                                             'произошла ошибка. Проверье ограничения.')
                 return self.url
 
             REQUEST_SETTINGS['range_result'] = [fn1_res, fn2_res]

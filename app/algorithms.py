@@ -280,7 +280,7 @@ class ComputationalCluster:
     def nueton_two(self, *args, **kwargs):
         return self.nueton(*args, **kwargs)
 
-    def gauss(self, x, x_0, n, h,  **kwargs):
+    def gauss(self, x, x_0, n=10, h=0.1,  **kwargs):
         xs = list(np.arange(x_0-n*h, x_0+n*h, h))
         func = self.lambda_func(self.parsed_func, Symbol('x'))
         try:
