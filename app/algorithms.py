@@ -167,8 +167,8 @@ class ComputationalCluster:
             ps = tmp.copy()
             values.append(ps[0])
 
-    def get_q(self, x, xs, h, first=False):
-        q = (x - (xs[0] if first else xs[-1])) / h
+    def get_q(self, x, xs, h, forward=False):
+        q = (x - (xs[0] if forward else xs[-1])) / h
 
         yield 1
 
@@ -177,10 +177,48 @@ class ComputationalCluster:
 
         while True:
             res *= (q+k)
-            k = k - 1 if first else k + 1
+            k = k - 1 if forward else k + 1
             yield res
 
-    def get_diff(self, ys, first=False):
+    def get_t(self, x, x0, h):
+        t = (x - x0) / h
+
+        yield 1
+        yield t
+
+        k = 1
+        res = t
+        while True:
+            res = res * (t - k)
+            yield res
+            res = res * (t + k)
+            yield res
+            k += 1
+
+    def get_diff_gauss(self, ys, center):
+        def calc(dg, n):
+            if dg == 0:
+                return ys[n + center]
+            elif n in hash.get(dg, {}):
+                return hash[dg][n]
+            else:
+                hash[dg][n] = calc(dg-1, n+1) - calc(dg-1, n)
+
+            return hash[dg][n]
+
+        yield ys[center]
+        ind = 0
+        degree = 1
+        hash = defaultdict(dict)
+
+        while True:
+            yield calc(degree, ind)
+            degree += 1
+            ind -= 1
+            yield calc(degree, ind)
+            degree += 1
+
+    def get_diff(self, ys, forward=False):
         def calc(dg, n):
             if dg == 0:
                 return ys[n]
@@ -191,7 +229,7 @@ class ComputationalCluster:
 
             return hash[dg][n]
 
-        if first:
+        if forward:
             yield ys[0]
             ind = 0
             degree = 1
@@ -205,9 +243,9 @@ class ComputationalCluster:
         while True:
             yield calc(degree, ind)
             degree += 1
-            ind = ind + 0 if first else ind - 1
+            ind = ind + 0 if forward else ind - 1
 
-    def nueton(self, x, x_0, x_n, st, first=False, **kwargs):
+    def nueton(self, x, x_0, x_n, st, forward=False, **kwargs):
         xs = list(np.arange(x_0, x_n, st))
         func = self.lambda_func(self.parsed_func, Symbol('x'))
         try:
@@ -220,9 +258,9 @@ class ComputationalCluster:
         values = []
         h = st
 
-        q = self.get_q(x, xs, h, first)
+        q = self.get_q(x, xs, h, forward)
 
-        diff = self.get_diff(ys, first)
+        diff = self.get_diff(ys, forward)
         fact = self.fact()
 
         for i in range(len(ys)):
@@ -236,14 +274,40 @@ class ComputationalCluster:
         return AlgorithmResult(res, values)
 
     def nueton_one(self, *args, **kwargs):
-        kwargs.update({'first': True})
+        kwargs.update({'forward': True})
         return self.nueton(*args, **kwargs)
 
     def nueton_two(self, *args, **kwargs):
         return self.nueton(*args, **kwargs)
 
+    def gauss(self, x, x_0, n, h,  **kwargs):
+        xs = list(np.arange(x_0-n*h, x_0+n*h, h))
+        func = self.lambda_func(self.parsed_func, Symbol('x'))
+        try:
+            ys = [func(i) for i in xs]
+        except Exception as e:
+            print(e)
+            return AssertionError(FUNC_DOES_NOT_EXIST, None)
+        res = 0
+        values = []
+        center = n
+        t = self.get_t(x, xs[center], h)
+
+        diff = self.get_diff_gauss(ys, center)
+        fact = self.fact()
+
+        for i in range((n - 1) * 2):
+            t_res = next(t)
+            diff_res = next(diff)
+            fact_res = next(fact)
+
+            res += diff_res * t_res / fact_res
+            values.append(res)
+
+        return AlgorithmResult(res, values)
+
 
 if __name__ == '__main__':
     cc = ComputationalCluster('E^x')
     print(cc.nueton_one(1, 0.5, 1.3, 0.1).result)
-    print(cc.nueton_two(1, 0.5, 1.3, 0.1).result)
+    print(cc.gauss(1, 1.25, 10, 0.1).result)
