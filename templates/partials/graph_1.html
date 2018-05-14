@@ -11,13 +11,13 @@
         data: {
             labels: {{ func_result.labels }},
             datasets: [{
-                label: 'Аппроксимация в точке f(x) на шаге K',
+                label: '{{ figure_titles.0.0 }}',
                 data: datapoints,
                 borderColor: 'rgb(54, 162, 235)',
                 backgroundColor: 'rgba(0, 0, 0, 0)',
                 fill: false
             }, {
-                label: 'Итоговое значение f(x) в точке X',
+                label: '{{ figure_titles.0.1 }}',
                 data: constant,
                 borderColor: 'rgb(255, 159, 64)',
                 backgroundColor: 'rgba(0, 0, 0, 0)',

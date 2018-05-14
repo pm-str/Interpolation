@@ -34,6 +34,7 @@ class ResultView(TemplateView):
 
             new_context['formula_fields'] = CNF['CONFIG']
             new_context['range_fields'] = CNF['RANGE']
+            new_context['figure_titles'] = CNF['FIGURE_TITLES']
             new_context['input_data'] = {}
             new_context['func_result'] = {}
             new_context['range_result'] = {}

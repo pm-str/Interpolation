@@ -6,7 +6,7 @@ from collections import defaultdict
 from sympy import Symbol, lambdify, Add
 from sympy.parsing.sympy_parser import parse_expr
 
-from app.messages import FUNC_DOES_NOT_EXIST, ZERO_DIVISION
+from app.messages import FUNC_DOES_NOT_EXIST_ERR, ZERO_DIVISION_ERR, WRONG_RANGE_ERR
 from app.params import AlgorithmResult
 from app.utils import *
 
@@ -68,7 +68,7 @@ class ComputationalCluster:
                 lambda_result = self.lambda_func(func_v, Symbol('x'))(x0)
                 if 'inf' in str(lambda_result):
                     return AssertionError(
-                        ZERO_DIVISION,
+                        ZERO_DIVISION_ERR,
                         str(lambda_result),
                     )
             except Exception as e:
@@ -147,7 +147,7 @@ class ComputationalCluster:
             ys = [func(i) for i in xs]
         except Exception as e:
             print(e)
-            return AssertionError(FUNC_DOES_NOT_EXIST, None)
+            return AssertionError(FUNC_DOES_NOT_EXIST_ERR, None)
         
         ps = ys.copy()
         values = []
@@ -252,7 +252,7 @@ class ComputationalCluster:
             ys = [func(i) for i in xs]
         except Exception as e:
             print(e)
-            return AssertionError(FUNC_DOES_NOT_EXIST, None)
+            return AssertionError(FUNC_DOES_NOT_EXIST_ERR, None)
 
         res = 0
         values = []
@@ -287,7 +287,7 @@ class ComputationalCluster:
             ys = [func(i) for i in xs]
         except Exception as e:
             print(e)
-            return AssertionError(FUNC_DOES_NOT_EXIST, None)
+            return AssertionError(FUNC_DOES_NOT_EXIST_ERR, None)
         res = 0
         values = []
         center = n
@@ -303,6 +303,43 @@ class ComputationalCluster:
 
             res += diff_res * t_res / fact_res
             values.append(res)
+
+        return AlgorithmResult(res, values)
+
+    def first_spline(self, x, x_0, h=0.1, **kwargs):
+        if x_0 > x:
+            return AssertionError(WRONG_RANGE_ERR, None)
+
+
+        values = []
+        res = None
+
+        x1 = x_0
+        x0 = y0 = None
+
+        while x1 < x + 3 * h:
+
+            try:
+                fn = self.lambda_func(self.parsed_func, Symbol('x'))
+                y1 = fn(x1)
+            except Exception as e:
+                print(e)
+                return AssertionError(FUNC_DOES_NOT_EXIST_ERR, None)
+
+            if x0 and y0:
+                a = (y1 - y0) / (x1 - x0)
+                b = y0 - a * x0
+                values.append(a*x0+b)
+
+                if x0 <= x < x1:
+                    res = values[-1]
+
+            x0 = x1
+            y0 = y1
+            x1 += h
+
+        if not res:
+            return AssertionError(FUNC_DOES_NOT_EXIST_ERR, None)
 
         return AlgorithmResult(res, values)
 
