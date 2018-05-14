@@ -19,10 +19,10 @@
             <select class="form-control" name="f_type" required>
               {% for j in i.select %}
                 <option
-                        {% if i.value == forloop.counter %}
-                        selected="selected"
-                        {% endif %}
-                        value="{{ forloop.counter }}">{{ j }}</option>
+                    {% if i.value == forloop.counter %}
+                      selected="selected"
+                    {% endif %}
+                      value="{{ forloop.counter }}">{{ j }}</option>
               {% endfor %}
             </select>
           {% else %}
@@ -49,7 +49,7 @@
   <table class="table table-bordered table-stripped">
     <thead>
     <tr>
-      <th colspan="2">Диапазон вычисления</th>
+      <th colspan="2">Диапазон вычислений</th>
     </tr>
     </thead>
     <tbody>
@@ -67,6 +67,11 @@
   </table>
   <div class="text-right">
     <button class="btn btn-md btn-primary" type="submit">Установить</button>
+    {% if range_result %}
+      <a class="btn btn-md btn-default" data-toggle="modal" data-target="#modalTable" href="">Сравнить</a>
+    {% endif %}
     <a class="btn btn-md btn-default" href="default/range">По-умолчанию</a>
   </div>
 </form>
+
+{% include 'partials/modal_table.html' %}

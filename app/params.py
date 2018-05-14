@@ -54,6 +54,9 @@ class RangeResult:
                 self.values.append(0)
             self.labels.append(label)
 
+    def zip(self):
+        return list(zip(self.labels, self.values))
+
     @staticmethod
     def is_inf(value):
         if abs(value) == np.inf:
@@ -71,6 +74,7 @@ NUETON_TWO = 'nueton_two'
 GAUSS = 'gauss'
 LINEAR_SPLINE = 'linear_spline'
 PARABOLIC_SPLINE = 'parabolic_spline'
+CUBIC_SPLINE = 'cubic_spline'
 
 ALGORITHMS = {
     MACKLOREN: 'Формула Маклорена',
@@ -83,6 +87,7 @@ ALGORITHMS = {
     GAUSS: 'Первая интер. формула Гаусса',
     LINEAR_SPLINE: 'Ломанный сплайн',
     PARABOLIC_SPLINE: 'Параболический сплайн',
+    CUBIC_SPLINE: 'Кубический сплайн',
 }
 
 DEFAULT_RANGE = [
@@ -237,6 +242,20 @@ PARAMS = {
         'CONFIG': [
             ConfData('Окрестность поиска, точка X', 'x', 1, float, -1e3, 1e3),
             ConfData('X начальное в таблице известных значений', 'x_0', 0.3, float, -1e6, 1e6),
+            ConfData('Шаг h в формуле x = x0 + th', 'h', 0.1, float, 1e-4, 1e3),
+        ],
+        'RANGE': [
+            ConfData('Начало диапазон X0', 'x_start', 0.2, float),
+            ConfData('Конец диапазон Xk', 'x_end', 1, float),
+            ConfData('Шаг S при сравнении значений на заданном интервале', 'step', 0.05, float),
+        ]
+    },
+    CUBIC_SPLINE: {
+        'FIGURE_TITLES': SPLINE_TITLES,
+        'FUNCTION_REQUIRED': True,
+        'CONFIG': [
+            ConfData('Окрестность поиска, точка X', 'x', 1, float, -1e3, 1e3),
+            ConfData('X начальное в таблице известных значений', 'x_0', 0.23, float, -1e6, 1e6),
             ConfData('Шаг h в формуле x = x0 + th', 'h', 0.1, float, 1e-4, 1e3),
         ],
         'RANGE': [

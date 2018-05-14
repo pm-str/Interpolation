@@ -18,3 +18,8 @@ def to_array(context, **kwargs):
     """Template helper that conver query dict to array"""
     queryarray = context['request'].GET.dict().items()
     return queryarray
+
+
+@register.filter(name='zip')
+def zip_lists(a, b):
+    return zip(a, b)

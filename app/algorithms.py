@@ -385,10 +385,64 @@ class ComputationalCluster:
 
         return AlgorithmResult(res, values)
 
+    def cubic_spline(self, x, x_0, h=0.1, **kwargs):
+        if x_0 > x:
+            return AssertionError(WRONG_RANGE_ERR, None)
+
+        res = None
+
+        xs = list(np.arange(x_0, x + 3 * h, h))
+        try:
+            fn = self.lambda_func(self.parsed_func, Symbol('x'))
+            def_1 = self.parsed_func.diff(Symbol('x'), 1)
+            der1 = self.lambda_func(def_1, Symbol('x'))
+            def_2 = def_1.diff(Symbol('x'), 1)
+            der2 = self.lambda_func(def_2, Symbol('x'))
+            ys = [fn(i) for i in xs]
+            _ = xs[1]
+        except Exception as e:
+            print(e)
+            return AssertionError(FUNC_DOES_NOT_EXIST_ERR, None)
+
+        a_ar = []
+        b_ar = []
+        c_ar = []
+        values = []
+
+        for i in range(len(xs)-1):
+            if i == 0:
+                t1 = der1(xs[i])
+                t2 = der2(xs[i])/2
+            else:
+                t1 = 3 * a_ar[i-1] * xs[i] * xs[i] + 2 * b_ar[i-1] * xs[i] + c_ar[i-1]
+                t2 = 3 * a_ar[i-1] * xs[i] + b_ar[i-1]
+
+            a = 1 / ((xs[i+1]-xs[i]) ** 2) * ((ys[i+1]-ys[i])/(xs[i+1]-xs[i]) - t2 * (xs[i+1]-xs[i]) - t1)
+            a_ar.append(a)
+
+            b = t2 - 3 * a * xs[i]
+            b_ar.append(b)
+
+            c = t1 - 3 * a * (xs[i] ** 2) - 2 * b * xs[i]
+            c_ar.append(c)
+
+            d = ys[i] - a * (xs[i] ** 3) - b * (xs[i] ** 2) - c * xs[i]
+
+            l = lambda x: a*(x**3) + b*(x**2) + c*x + d
+            values.append(l(xs[i]))
+            if xs[i] <= x <= xs[i+1]:
+                res = l(x)
+
+        if not res:
+            return AssertionError(FUNC_DOES_NOT_EXIST_ERR, None)
+
+        return AlgorithmResult(res, values)
+
 
 if __name__ == '__main__':
     cc = ComputationalCluster('E^x')
     print(cc.nueton_one(1, 0.55, 1.3, 0.1).result)
     print(cc.gauss(1, 1.25, 10, 0.1).result)
-    print(cc.linear_spline(1, 0.85, 0.1).result)
+    print(cc.linear_spline(1, 0.83, 0.1).result)
     print(cc.parabolic_spline(1, 0.85, 0.1).result)
+    print(cc.cubic_spline(1, 0.83, 0.1).result)
