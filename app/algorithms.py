@@ -306,10 +306,9 @@ class ComputationalCluster:
 
         return AlgorithmResult(res, values)
 
-    def first_spline(self, x, x_0, h=0.1, **kwargs):
+    def linear_spline(self, x, x_0, h=0.1, **kwargs):
         if x_0 > x:
             return AssertionError(WRONG_RANGE_ERR, None)
-
 
         values = []
         res = None
@@ -332,7 +331,7 @@ class ComputationalCluster:
                 values.append(a*x0+b)
 
                 if x0 <= x < x1:
-                    res = values[-1]
+                    res = a * x + b
 
             x0 = x1
             y0 = y1
@@ -343,8 +342,53 @@ class ComputationalCluster:
 
         return AlgorithmResult(res, values)
 
+    def parabolic_spline(self, x, x_0, h=0.1, **kwargs):
+        if x_0 > x:
+            return AssertionError(WRONG_RANGE_ERR, None)
+
+        res = None
+
+        xs = list(np.arange(x_0, x + 3 * h, h))
+        try:
+            fn = self.lambda_func(self.parsed_func, Symbol('x'))
+            der = self.lambda_func(self.parsed_func.diff(Symbol('x'), 1), Symbol('x'))
+            ys = [fn(i) for i in xs]
+            _ = xs[1]
+        except Exception as e:
+            print(e)
+            return AssertionError(FUNC_DOES_NOT_EXIST_ERR, None)
+
+        a_ar = []
+        b_ar = []
+        values = []
+
+        for i in range(len(xs)-1):
+            if i == 0:
+                t = der(xs[i])
+            else:
+                t = 2 * a_ar[i-1] * xs[i] + b_ar[i-1]
+
+            a = 1 / (xs[i + 1] - xs[i]) * ((ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]) - t)
+            a_ar.append(a)
+
+            b = t - 2 * a * xs[i]
+            b_ar.append(b)
+
+            c = ys[i] - t * xs[i] + a_ar[i] * xs[i] ** 2
+
+            values.append(a * xs[i] * xs[i] + b * xs[i] + c)
+            if xs[i] <= x <= xs[i+1]:
+                res = a * x * x + b * x + c
+
+        if not res:
+            return AssertionError(FUNC_DOES_NOT_EXIST_ERR, None)
+
+        return AlgorithmResult(res, values)
+
 
 if __name__ == '__main__':
     cc = ComputationalCluster('E^x')
-    print(cc.nueton_one(1, 0.5, 1.3, 0.1).result)
+    print(cc.nueton_one(1, 0.55, 1.3, 0.1).result)
     print(cc.gauss(1, 1.25, 10, 0.1).result)
+    print(cc.linear_spline(1, 0.85, 0.1).result)
+    print(cc.parabolic_spline(1, 0.85, 0.1).result)

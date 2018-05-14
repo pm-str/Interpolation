@@ -69,7 +69,8 @@ EITKEN = 'eitken'
 NUETON_ONE = 'nueton_one'
 NUETON_TWO = 'nueton_two'
 GAUSS = 'gauss'
-FIRST_SPLINE = 'first_spline'
+LINEAR_SPLINE = 'linear_spline'
+PARABOLIC_SPLINE = 'parabolic_spline'
 
 ALGORITHMS = {
     MACKLOREN: 'Формула Маклорена',
@@ -80,7 +81,8 @@ ALGORITHMS = {
     NUETON_ONE: 'Первая интер. формула Ньютона',
     NUETON_TWO: 'Вторая интер. формула Ньютона',
     GAUSS: 'Первая интер. формула Гаусса',
-    FIRST_SPLINE: 'Ломанный сплайн',
+    LINEAR_SPLINE: 'Ломанный сплайн',
+    PARABOLIC_SPLINE: 'Параболический сплайн',
 }
 
 DEFAULT_RANGE = [
@@ -215,7 +217,7 @@ PARAMS = {
             ConfData('Шаг S при сравнении значений на заданном интервале', 'step', 0.1, float),
         ]
     },
-    FIRST_SPLINE: {
+    LINEAR_SPLINE: {
         'FIGURE_TITLES': SPLINE_TITLES,
         'FUNCTION_REQUIRED': True,
         'CONFIG': [
@@ -227,6 +229,20 @@ PARAMS = {
             ConfData('Начало диапазон X0', 'x_start', 0, float),
             ConfData('Конец диапазон Xk', 'x_end', 1, float),
             ConfData('Шаг S при сравнении значений на заданном интервале', 'step', 0.1, float),
+        ]
+    },
+    PARABOLIC_SPLINE: {
+        'FIGURE_TITLES': SPLINE_TITLES,
+        'FUNCTION_REQUIRED': True,
+        'CONFIG': [
+            ConfData('Окрестность поиска, точка X', 'x', 1, float, -1e3, 1e3),
+            ConfData('X начальное в таблице известных значений', 'x_0', 0.3, float, -1e6, 1e6),
+            ConfData('Шаг h в формуле x = x0 + th', 'h', 0.1, float, 1e-4, 1e3),
+        ],
+        'RANGE': [
+            ConfData('Начало диапазон X0', 'x_start', 0.2, float),
+            ConfData('Конец диапазон Xk', 'x_end', 1, float),
+            ConfData('Шаг S при сравнении значений на заданном интервале', 'step', 0.05, float),
         ]
     },
 }
