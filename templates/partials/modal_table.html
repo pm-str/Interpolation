@@ -18,6 +18,7 @@
             <th scope="col">x</th>
             <th scope="col">Значение функции F(x)</th>
             <th scope="col">Аппроксимация</th>
+            <th scope="col">Eps</th>
           </tr>
           </thead>
           <tbody>
@@ -27,6 +28,7 @@
               <td>{{ i.0.0 }}</td>
               <td>{{ i.0.1 }}</td>
               <td>{{ i.1.1 }}</td>
+              <td>{{ i.1.1|eps:i.0.1}}</td>
             </tr>
           {% endfor %}
           </tbody>

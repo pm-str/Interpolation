@@ -23,3 +23,8 @@ def to_array(context, **kwargs):
 @register.filter(name='zip')
 def zip_lists(a, b):
     return zip(a, b)
+
+
+@register.filter(name='eps')
+def eps(a, b):
+    return f'{abs(a-b):10.2e}'
