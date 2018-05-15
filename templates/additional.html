@@ -2,10 +2,21 @@
 
 {% block content %}
   <div class="row result-row">
-    <div class="col-lg-12"><h1>Полезные ссылки</h1></div>
+    <div class="col-lg-12"><h3>Полезные ссылки</h3></div>
       <div class="col-lg-12">
         <p>Информация касательно допустимых символов
         <a href="http://docs.sympy.org/latest/modules/parsing.html">simpy</a></p>
+      </div>
+    <div class="col-lg-12"><h3>Примеры функций</h3></div>
+      <div class="col-lg-12">
+        <p>E^(x)<p><p>23 * (x^2) * E^x</p><p>x + 2x^2 + log(42)</p>
+        <p>10sin**2 x**2 + 3x</p><p>tan(2)/(2)*cos(E^(x^2))</p>
+        <p>x^2^3</p>
+      </div>
+    <div class="col-lg-12"><h3>Примечания</h3></div>
+      <div class="col-lg-12">
+        <p>Для некоторых интерполяционных формул заданная функция не имеет в смысла, в виду того,
+          что используются заранее выбранное в пункте `f_type` выражение.</p>
       </div>
   </div>
 {% endblock %}
