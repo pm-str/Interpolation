@@ -126,6 +126,7 @@ PARAMS = {
         'RANGE': DEFAULT_RANGE
     },
     TEYLOR: {
+        'FIGURE_TITLES': DEFAULT_TITLES,
         'FUNCTION_REQUIRED': True,
         'CONFIG': [
             ConfData('Окрестность поиска, точка X', 'x', 5, float),
