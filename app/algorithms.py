@@ -167,6 +167,8 @@ class ComputationalCluster:
             ps = tmp.copy()
             values.append(ps[0])
 
+        return AlgorithmResult(values[-1], values)
+
     def get_q(self, x, xs, h, forward=False):
         q = (x - (xs[0] if forward else xs[-1])) / h
 
@@ -441,8 +443,9 @@ class ComputationalCluster:
 
 if __name__ == '__main__':
     cc = ComputationalCluster('E^x')
-    print(cc.nueton_one(1, 0.55, 1.3, 0.1).result)
-    print(cc.gauss(1, 1.25, 10, 0.1).result)
-    print(cc.linear_spline(1, 0.83, 0.1).result)
-    print(cc.parabolic_spline(1, 0.85, 0.1).result)
-    print(cc.cubic_spline(1, 0.83, 0.1).result)
+    # print(cc.nueton_one(1, 0.55, 1.3, 0.1).result)
+    # print(cc.gauss(1, 1.25, 10, 0.1).result)
+    # print(cc.linear_spline(1, 0.83, 0.1).result)
+    # print(cc.parabolic_spline(1, 0.85, 0.1).result)
+    # print(cc.cubic_spline(1, 0.83, 0.1).result)
+    print(cc.eitken(2.0, 1.0, 3.0, 0.1).result)
